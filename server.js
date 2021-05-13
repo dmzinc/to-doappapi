@@ -1,9 +1,39 @@
-const http = require("http");
+const express = require("express");
 
-const app = require("./app");
+const mongoose = require("mongoose");
 
-const port = process.env.PORT || 8000;
+const bodyParser = require("body-parser");
 
-const server = http.createServer(app);
+//Create express app
+const app = express();
 
-server.listen(port);
+//Database
+mongoose.connect(
+  "mongodb+srv://forbes:forbes22@to-do-app-api.xvrdf.mongodb.net/forbes?retryWrites=true&w=majority",
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  }
+);
+
+//Database
+const db = mongoose.connection;
+
+db.once("open", () => {
+  console.log("connected to mongo db ");
+});
+
+//Middleware
+app.use(bodyParser.json());
+
+//Routes
+app.get("/", (req, res) => {
+  res.send("Hello");
+});
+
+const ListsRoute = require("./routes/Lists");
+
+app.use("/lists", ListsRoute);
+
+//Starting Server
+app.listen(8000, () => console.log("server started "));
